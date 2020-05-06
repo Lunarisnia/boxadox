@@ -41,7 +41,6 @@ public class PlayerMovement : MonoBehaviour
         RayCasted();
     }
 
-    GameObject objectHitByRayCast;
     void RayCasted()
     {
         RaycastHit hit;
@@ -52,8 +51,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (Physics.Raycast(ray, out hit, rayCastMaxDistance, rayCastTarget))
                 {
-                    objectHitByRayCast = hit.collider.gameObject;
-                    GrabItem(objectHitByRayCast);
+                    GrabItem(hit.collider.gameObject);
                 }
             }
             else
