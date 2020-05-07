@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -41,36 +41,43 @@ public class PlayerMovement : MonoBehaviour
         RayCasted();
     }
 
+    GameObject objectHitByRayCast;
+    public Image crossHair;
+    public Sprite interactablePointer;
+    public Sprite defaultPointer;
     void RayCasted()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Input.GetButtonDown("Grab"))
+        if (Physics.Raycast(ray, out hit, rayCastMaxDistance, rayCastTarget))
+        {   
+            crossHair.sprite = interactablePointer;
+            objectHitByRayCast = hit.collider.gameObject;
+        }
+        else
         {
-            if (!isGrabbing)
-            {
-                if (Physics.Raycast(ray, out hit, rayCastMaxDistance, rayCastTarget))
-                {
-                    GrabItem(hit.collider.gameObject);
-                }
-            }
-            else
-            {
-                DropItem();
-            }
-
+            crossHair.sprite = defaultPointer;
+            objectHitByRayCast = null;
         }
 
+        if (Input.GetButtonDown("Grab") && objectHitByRayCast != null && !isGrabbing)
+        {
+            GrabItem();
+        }
+        else if (Input.GetButtonDown("Grab") && isGrabbing)
+        {
+            DropItem(); 
+        }
     }
 
     Rigidbody boxRb;
     CharacterJoint charJoint;
-    void GrabItem(GameObject item)
+    void GrabItem()
     {
-        boxRb = item.GetComponent<Rigidbody>();
-        charJoint = item.GetComponent<CharacterJoint>() != null
-            ? item.GetComponent<CharacterJoint>()
-            : item.AddComponent<CharacterJoint>();
+        boxRb = objectHitByRayCast.GetComponent<Rigidbody>();
+        charJoint = objectHitByRayCast.GetComponent<CharacterJoint>() != null
+            ? objectHitByRayCast.GetComponent<CharacterJoint>()
+            : objectHitByRayCast.AddComponent<CharacterJoint>();
 
         boxRb.useGravity = false;
         boxRb.constraints = RigidbodyConstraints.FreezeRotation;
