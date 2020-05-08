@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.Events;
 public class PlayerMovement : MonoBehaviour
 {
     public float movementSpeed = 10f;
@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
         JumpPlayer();
         RayCasted();
+        PauseGame();
     }
 
     GameObject objectHitByRayCast;
@@ -50,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, rayCastMaxDistance, rayCastTarget))
-        {   
+        {
             crossHair.sprite = interactablePointer;
             objectHitByRayCast = hit.collider.gameObject;
         }
@@ -66,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (Input.GetButtonDown("Grab") && isGrabbing)
         {
-            DropItem(); 
+            DropItem();
         }
     }
 
@@ -127,6 +128,24 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
+        }
+    }
+
+
+    [System.Serializable]
+    public class PauseEvent : UnityEvent { }
+
+
+    [SerializeField]
+    PauseEvent pauseEvent = new PauseEvent();
+    public PauseEvent onPauseEvent { get { return pauseEvent; } set { pauseEvent = value; } }
+
+    void PauseGame()
+    {
+        if (Input.GetButtonDown("Pause"))
+        {
+            
+            pauseEvent.Invoke();
         }
     }
 }

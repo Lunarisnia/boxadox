@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public int timeLimit;
     public TextMeshProUGUI timer;
+    public static bool gameIsPaused = false;
     void Start()
     {
         StartCoroutine(StartTimer());
@@ -24,5 +25,19 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         //activate the lose menu
+    }
+
+    public void PauseGame()
+    {
+        if (!gameIsPaused)
+        {
+            Time.timeScale = 0f;
+            gameIsPaused = true;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            gameIsPaused = false;
+        }
     }
 }
